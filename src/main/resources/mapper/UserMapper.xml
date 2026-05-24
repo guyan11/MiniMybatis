@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper namespace="com.mini.batis.mapper.UserMapper">
+    <select id="findAll" resultType="com.mini.batis.entity.User">
+        SELECT id, username, password, email FROM user
+    </select>
+
+    <select id="findById" resultType="com.mini.batis.entity.User" statementType="preparedStatement">
+        SELECT id, username, password, email FROM user WHERE id = #{id}
+    </select>
+
+    <select id="findByUsername" resultType="com.mini.batis.entity.User" statementType="statement">
+        SELECT id, username, password, email FROM user WHERE username like '%${username}%' and id = #{id}
+    </select>
+</mapper>
