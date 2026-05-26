@@ -1,18 +1,22 @@
 package com.mini.batis.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class MapperStatement {
 
     private String id;
     private String namespace;
     private String statementId;
     private String sql;
-    private Class<?> resultType;
-    private Class<?> parameterType;
+    private String resultType;
+    private String parameterType;
     private String sqlCommandType;
     private String statementType;
 }

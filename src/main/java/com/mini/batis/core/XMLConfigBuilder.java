@@ -1,10 +1,97 @@
 package com.mini.batis.core;
 
 import com.mini.batis.model.Configuration;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 public class XMLConfigBuilder {
 
     public Configuration parse(String configPath) {
-        return null;
+        try {
+            Configuration configuration = new Configuration();
+            InputStream is = getClass().getClassLoader().getResourceAsStream(configPath);
+            SAXReader saxReader = new SAXReader();
+            Document configDocument = saxReader.read(is);
+            Element rootElement = configDocument.getRootElement();
+            parseEnvironments(rootElement, configuration);
+            parseMappers(rootElement, configuration);
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+        }
+    }
+
+    private void parseMappers(Element rootElement, Configuration configuration) throws Exception {
+        Element mappersElement = rootElement.element("mappers");
+        if (null == mappersElement) {
+            return;
+        }
+        List<Element> mappers = mappersElement.elements("mapper");
+        for (Element mapper : mappers) {
+            String resource = mapper.attributeValue("resource");
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
+            XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder();
+            xmlMapperBuilder.parse(inputStream, configuration);
+
+        }
+    }
+
+    private void parseEnvironments(Element rootElement, Configuration configuration) {
+        Element environmentsElement = rootElement.element("environments");
+        String environDefault = environmentsElement.attributeValue("default");
+        List<Element> elements = environmentsElement.elements("environment");
+        Element matchedEnvironmentElement = null;
+        for (Element element : elements) {
+            String id = element.attributeValue("id");
+            if (Objects.equals(id, environDefault)) {
+                matchedEnvironmentElement = element;
+                break;
+            }
+        }
+        if (null == matchedEnvironmentElement) {
+            return;
+        }
+        Element dataSourceElement = matchedEnvironmentElement.element("dataSource");
+        if (null == dataSourceElement) {
+            return;
+        }
+        String dataSourceType = dataSourceElement.attributeValue("type");
+        if (null == dataSourceType || dataSourceType.isEmpty()) {
+            return;
+        }
+        if (Objects.equals(dataSourceType, "DBCP")) {
+            Properties dbcpDataSource = parseDBCPDataSource(dataSourceElement, configuration);
+            BasicDataSource basicDataSource = new BasicDataSource();
+            basicDataSource.setDriverClassName(dbcpDataSource.getProperty("driver"));
+            basicDataSource.setUrl(dbcpDataSource.getProperty("url"));
+            basicDataSource.setUsername(dbcpDataSource.getProperty("username"));
+            basicDataSource.setPassword(dbcpDataSource.getProperty("password"));
+            configuration.setDataSource(basicDataSource);
+        }
+    }
+
+    private Properties parseDBCPDataSource(Element dataSourceElement, Configuration configuration) {
+        List<Element> property = dataSourceElement.elements("property");
+        Properties properties = new Properties();
+        for (Element element : property) {
+            if (null == element) {
+                continue;
+            }
+            String name = element.attributeValue("name");
+            String value = element.attributeValue("value");
+            if (null == name || name.isEmpty() || null == value || value.isEmpty()) {
+                continue;
+            }
+            properties.setProperty(name, value);
+        }
+        return properties;
     }
 }
