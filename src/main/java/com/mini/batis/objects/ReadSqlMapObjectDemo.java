@@ -78,7 +78,11 @@ public class ReadSqlMapObjectDemo {
             configuration.setDataSource(dataSource);
         }
 
-        List<Element> mappersElement = configurationElement.elements("mapper");
+        Element mappers = configurationElement.element("mappers");
+        if (null == mappers) {
+            return;
+        }
+        List<Element> mappersElement = mappers.elements("mapper");
 
         if (null == mappersElement) {
             throw new RuntimeException("Can not find mapper config");
@@ -111,16 +115,16 @@ public class ReadSqlMapObjectDemo {
                 String sqlCommandType = selectElement.attributeValue("sqlCommandType");
                 String statementType = selectElement.attributeValue("statementType");
                 String sql = selectElement.getText();
-                Class<?> resultClazz = null;
-                if (resultType != null && !resultType.trim().isEmpty()) {
-                    resultClazz = Class.forName(resultType);
-                }
-                Class<?> parameterClazz = null;
-                if (parameterType != null && !parameterType.trim().isEmpty()) {
-                    parameterClazz = Class.forName(parameterType);
-                }
-                MapperStatement mapperStatement = new MapperStatement(id, namespace, namespace + "." + id, sql, resultClazz,
-                        parameterClazz, sqlCommandType, statementType);
+                // Class<?> resultClazz = null;
+                // if (resultType != null && !resultType.trim().isEmpty()) {
+                //     resultClazz = Class.forName(resultType);
+                // }
+                // Class<?> parameterClazz = null;
+                // if (parameterType != null && !parameterType.trim().isEmpty()) {
+                //     parameterClazz = Class.forName(parameterType);
+                // }
+                MapperStatement mapperStatement = new MapperStatement(id, namespace, namespace + "." + id, sql, resultType,
+                        parameterType, sqlCommandType, statementType);
                 configuration.addMapperStatement(namespace, mapperStatement);
             }
 
@@ -147,7 +151,11 @@ public class ReadSqlMapObjectDemo {
             Connection connection = dataSource.getConnection();
 
             List<Object> resultList = new ArrayList<>();
-            Class<?> resultClass = statementInfo.getResultType();
+            String resultType = statementInfo.getResultType();
+            Class<?> resultClass = null;
+            if (resultType != null && !resultType.trim().isEmpty()) {
+                resultClass = Class.forName(resultType);
+            }
             if (parameterNames.isEmpty()) {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(jdbcSql);
