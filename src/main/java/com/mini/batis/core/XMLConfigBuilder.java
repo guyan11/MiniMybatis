@@ -14,9 +14,13 @@ import java.util.Properties;
 public class XMLConfigBuilder {
 
     public Configuration parse(String configPath) {
+        InputStream is = null;
         try {
             Configuration configuration = new Configuration();
-            InputStream is = getClass().getClassLoader().getResourceAsStream(configPath);
+            is = getClass().getClassLoader().getResourceAsStream(configPath);
+            if (null == is) {
+                throw new RuntimeException("Can not find config file: " + configPath);
+            }
             SAXReader saxReader = new SAXReader();
             Document configDocument = saxReader.read(is);
             Element rootElement = configDocument.getRootElement();
@@ -26,6 +30,13 @@ public class XMLConfigBuilder {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
+            if (null != is) {
+                try {
+                    is.close();
+                } catch (Exception e) {
+                    System.out.println("Close input stream error: " + e.getMessage());
+                }
+            }
         }
     }
 
