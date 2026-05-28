@@ -4,6 +4,7 @@ import com.mini.batis.core.XMLConfigBuilder;
 import com.mini.batis.model.Configuration;
 import com.mini.batis.model.MapperStatement;
 import com.mini.batis.reflection.ParamValueResolver;
+import com.mini.batis.scripting.BoundSql;
 import com.mini.batis.scripting.ParameterMapping;
 import com.mini.batis.scripting.SqlSource;
 import com.mini.batis.scripting.SqlSourceBuilder;
@@ -45,22 +46,13 @@ public class ReadSqlMapObjectV2Demo {
 
         SqlSourceBuilder sqlSourceBuilder = new SqlSourceBuilder();
         String originalSql = statementInfo.getSql();
-        String sql = null;
-        SqlSource sqlSource = null;
-        List<ParameterMapping> parameterNames = new ArrayList<>();
-        if (originalSql.contains("${")) {
-            sql = sqlSourceBuilder.parseDollarPlaceholder(originalSql, params);
-        }
-
-        if (originalSql.contains("#{")) {
-            sqlSource = sqlSourceBuilder.parse(sql == null ? originalSql : sql);
-            sql = sqlSource.getBoundSql(params).getSql();
-            parameterNames = sqlSource.getBoundSql(params).getParameterMappings();
-        }
-
-        if (null == sql && null == sqlSource) {
-            return;
-        }
+        String sqlAfterDollarParsed = sqlSourceBuilder.parseDollarPlaceholder(originalSql, params);
+        System.out.println("sqlAfterDollarParsed =: " + sqlAfterDollarParsed);
+        SqlSource sqlSource = sqlSourceBuilder.parse(sqlAfterDollarParsed);
+        BoundSql boundSql = sqlSource.getBoundSql(params);
+        String sql = boundSql.getSql();
+        System.out.println("sql =: " + sql);
+        List<ParameterMapping> parameterNames = boundSql.getParameterMappings();
 
 
         DataSource dataSource = configuration.getDataSource();
