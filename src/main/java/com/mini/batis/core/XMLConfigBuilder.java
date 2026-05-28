@@ -26,7 +26,7 @@ public class XMLConfigBuilder {
             Element rootElement = configDocument.getRootElement();
             parseEnvironments(rootElement, configuration);
             parseMappers(rootElement, configuration);
-            return null;
+            return configuration;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
