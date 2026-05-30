@@ -20,7 +20,7 @@ public class ParamValueResolver {
 
         String getterMethodName = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
         try {
-            return property.getClass().getMethod(getterMethodName).invoke(property);
+            return parameterObject.getClass().getMethod(getterMethodName).invoke(property);
         } catch (Exception e) {
             try {
                 Field field = parameterObject.getClass().getDeclaredField(property);
