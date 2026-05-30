@@ -20,7 +20,7 @@ public class SimpleExecutor implements Executor {
         Connection connection = null;
         try {
             connection = configuration.getDataSource().getConnection();
-            SimpleStatementHandler statementHandler = new SimpleStatementHandler(mapperStatement, parameter);
+            StatementHandler statementHandler = new SimpleStatementHandlerV2(mapperStatement, parameter);
             return statementHandler.query(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);

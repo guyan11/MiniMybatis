@@ -1,23 +1,23 @@
 package com.mini.batis.executor;
 
 import com.mini.batis.model.MapperStatement;
-import com.mini.batis.reflection.ParamValueResolver;
 import com.mini.batis.scripting.BoundSql;
 import com.mini.batis.scripting.ParameterMapping;
 import com.mini.batis.scripting.SqlSource;
 import com.mini.batis.scripting.SqlSourceBuilder;
 
-import java.lang.reflect.Field;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
-public class SimpleStatementHandler implements StatementHandler {
+public class SimpleStatementHandlerV2 implements StatementHandler {
 
     private final MapperStatement mapperStatement;
     private final Object parameterObject;
 
-    public SimpleStatementHandler(MapperStatement mapperStatement, Object parameterObject) {
+    public SimpleStatementHandlerV2(MapperStatement mapperStatement, Object parameterObject) {
         this.mapperStatement = mapperStatement;
         this.parameterObject = parameterObject;
     }
@@ -28,10 +28,11 @@ public class SimpleStatementHandler implements StatementHandler {
             BoundSql boundSql = getBoundSql(parameterObject);
             List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
             Class<?> resultClass = resolveResultClass(mapperStatement.getResultType());
+            DefaultResultSetHandler defaultResultSetHandler = new DefaultResultSetHandler(resultClass);
             if (parameterMappings.isEmpty()) {
-                return queryWithStatement(connection, boundSql, resultClass);
+                return queryWithStatement(connection, boundSql, defaultResultSetHandler);
             } else {
-                return queryWithPrepareStatement(connection, boundSql, resultClass);
+                return queryWithPrepareStatement(connection, boundSql, defaultResultSetHandler);
             }
         } catch (Exception e) {
             throw new RuntimeException("Error querying statement:" + mapperStatement.getId(), e);
@@ -39,14 +40,14 @@ public class SimpleStatementHandler implements StatementHandler {
     }
 
     private <E> List<E> queryWithStatement(Connection connection, BoundSql boundSql,
-                                           Class<?> resultClass) throws Exception {
+                                           ResultSetHandler resultSetHandler) throws Exception {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
             String sql = boundSql.getSql();
             resultSet = statement.executeQuery(sql);
-            return handlerResultSet(resultSet, resultClass);
+            return resultSetHandler.handleResultSet(resultSet);
         } finally {
             closeResultSet(resultSet);
             closeStatement(statement);
@@ -54,56 +55,21 @@ public class SimpleStatementHandler implements StatementHandler {
     }
 
     private <E> List<E> queryWithPrepareStatement(Connection connection, BoundSql boundSql,
-                                                  Class<?> resultClass) throws Exception {
+                                                  ResultSetHandler resultSetHandler) throws Exception {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             String sql = boundSql.getSql();
-            List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
             preparedStatement = connection.prepareStatement(sql);
-            setParameter(parameterMappings, preparedStatement);
+
+            DefaultParameterHandler parameterHandler = new DefaultParameterHandler(boundSql, parameterObject);
+            parameterHandler.setParameter(preparedStatement);
 
             resultSet = preparedStatement.executeQuery();
-            return handlerResultSet(resultSet, resultClass);
+            return resultSetHandler.handleResultSet(resultSet);
         } finally {
             closeStatement(preparedStatement);
             closeResultSet(resultSet);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <E> List<E> handlerResultSet(ResultSet resultSet, Class<?> resultClass) throws Exception {
-        if (resultSet == null) {
-            return new ArrayList<>();
-        }
-        List<E> resultList = new ArrayList<>();
-        while (resultSet.next()) {
-            Object object = mapToObject(resultSet, resultClass);
-            resultList.add((E) object);
-        }
-        return resultList;
-    }
-
-    private static Object mapToObject(ResultSet resultSet, Class<?> resultClass) throws InstantiationException, IllegalAccessException, SQLException {
-        Object res = resultClass.newInstance();
-        Field[] declaredFields = res.getClass().getDeclaredFields();
-        for (Field declaredField : declaredFields) {
-            Object value = resultSet.getObject(declaredField.getName());
-            if (null == value) {
-                continue;
-            }
-            declaredField.setAccessible(true);
-            declaredField.set(res, value);
-        }
-        return res;
-    }
-
-    private void setParameter(List<ParameterMapping> parameterMappings, PreparedStatement preparedStatement) throws SQLException {
-        for (int i = 0; i < parameterMappings.size(); i++) {
-            ParameterMapping parameterMapping = parameterMappings.get(i);
-            String propertyName = parameterMapping.getProperty();
-            Object value = ParamValueResolver.getValue(parameterObject, propertyName);
-            preparedStatement.setObject(i + 1, value);
         }
     }
 
