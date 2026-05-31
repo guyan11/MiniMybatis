@@ -1,7 +1,6 @@
 package com.mini.batis.session;
 
 import com.mini.batis.model.Configuration;
-import org.apache.commons.dbcp.BasicDataSource;
 
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
@@ -16,8 +15,4 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
         return new DefaultSqlSessionV2(configuration);
     }
 
-    @Override
-    public void closeSession() throws Exception {
-        ((BasicDataSource) configuration.getDataSource()).close();
-    }
 }

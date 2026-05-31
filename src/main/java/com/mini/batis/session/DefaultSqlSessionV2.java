@@ -11,16 +11,18 @@ public class DefaultSqlSessionV2 implements SqlSession {
 
     private final Configuration configuration;
 
+    private final Executor executor;
+
     public DefaultSqlSessionV2(Configuration configuration) {
         this.configuration = configuration;
+        this.executor = new SimpleExecutor(configuration);
     }
 
     @Override
     public <E> List<E> selectList(String statementId, Object parameter) {
-        Executor executor = new SimpleExecutor(configuration);
         MapperStatement statementInfo = configuration.getMapperStatement(statementId);
         if (statementInfo == null) {
-            throw new RuntimeException("statementInfo is null");
+            throw new RuntimeException("Can not find statement: " + statementId);
         }
         return executor.query(statementInfo, parameter);
     }

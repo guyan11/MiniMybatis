@@ -16,8 +16,8 @@ public class ReadSqlMapObjectV6Demo {
         params.put("id", 2);
 
         SqlSessionFactoryBuilder factoryBuilder = new SqlSessionFactoryBuilder();
-        SqlSessionFactory build = factoryBuilder.build("sqlMapConfig.xml");
-        SqlSession sqlSession = build.openSession();
+        SqlSessionFactory sqlSessionFactory = factoryBuilder.build("sqlMapConfig.xml");
+        SqlSession sqlSession = sqlSessionFactory.openSession();
 
         List<Object> resList = sqlSession.selectList(statementId, params);
 
