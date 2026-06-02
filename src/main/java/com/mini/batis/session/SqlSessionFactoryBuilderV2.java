@@ -1,6 +1,5 @@
 package com.mini.batis.session;
 
-import com.mini.batis.core.XMLConfigBuilder;
 import com.mini.batis.core.XMLConfigBuilderV2;
 import com.mini.batis.model.Configuration;
 

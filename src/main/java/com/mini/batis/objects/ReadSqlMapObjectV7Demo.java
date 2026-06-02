@@ -2,7 +2,6 @@ package com.mini.batis.objects;
 
 import com.mini.batis.session.SqlSession;
 import com.mini.batis.session.SqlSessionFactory;
-import com.mini.batis.session.SqlSessionFactoryBuilder;
 import com.mini.batis.session.SqlSessionFactoryBuilderV2;
 
 import java.util.LinkedHashMap;
