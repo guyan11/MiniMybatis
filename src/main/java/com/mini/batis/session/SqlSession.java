@@ -8,4 +8,6 @@ public interface SqlSession {
 
     <E> E selectOne(String statementId, Object parameter);
 
+    int insert(String statementId, Object parameter);
+
 }

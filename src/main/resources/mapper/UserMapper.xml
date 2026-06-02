@@ -11,4 +11,9 @@
     <select id="findByUsername" resultType="com.mini.batis.entity.User" statementType="statement">
         SELECT id, username, password, email FROM user WHERE username like '%${username}%' and id = #{id}
     </select>
+
+    <insert id="insertUser" parameterType="com.mini.batis.entity.User">
+        INSERT INTO user (username, password, email)
+        VALUES (#{username}, #{password}, #{email})
+    </insert>
 </mapper>

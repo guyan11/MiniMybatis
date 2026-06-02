@@ -1,21 +1,21 @@
 package com.mini.batis.session;
 
 import com.mini.batis.executor.Executor;
-import com.mini.batis.executor.SimpleExecutorV2;
+import com.mini.batis.executor.SimpleExecutor;
 import com.mini.batis.model.Configuration;
 import com.mini.batis.model.MapperStatement;
 
 import java.util.List;
 
-public class DefaultSqlSessionV2 implements SqlSession {
+public class DefaultSqlSessionV3 implements SqlSession {
 
     private final Configuration configuration;
 
     private final Executor executor;
 
-    public DefaultSqlSessionV2(Configuration configuration) {
+    public DefaultSqlSessionV3(Configuration configuration) {
         this.configuration = configuration;
-        this.executor = new SimpleExecutorV2(configuration);
+        this.executor = new SimpleExecutor(configuration);
     }
 
     @Override

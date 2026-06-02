@@ -6,10 +6,7 @@ import com.mini.batis.scripting.ParameterMapping;
 import com.mini.batis.scripting.SqlSource;
 import com.mini.batis.scripting.SqlSourceBuilder;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 public class SimpleStatementHandlerV2 implements StatementHandler {
@@ -36,6 +33,44 @@ public class SimpleStatementHandlerV2 implements StatementHandler {
             }
         } catch (Exception e) {
             throw new RuntimeException("Error querying statement:" + mapperStatement.getId(), e);
+        }
+    }
+
+    @Override
+    public int update(Connection connection) {
+        BoundSql boundSql = getBoundSql(parameterObject);
+        try {
+            List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+            if (parameterMappings.isEmpty()) {
+                return updateWithStatement(connection, boundSql);
+            } else {
+                return updateWithPrepareStatement(connection, boundSql);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error executing update data" + mapperStatement.getId(), e);
+        }
+    }
+
+    private int updateWithPrepareStatement(Connection connection, BoundSql boundSql) throws Exception {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(boundSql.getSql());
+            DefaultParameterHandler parameterHandler = new DefaultParameterHandler(boundSql, parameterObject);
+            parameterHandler.setParameter(preparedStatement);
+            return preparedStatement.executeUpdate();
+        } finally {
+            closeStatement(preparedStatement);
+        }
+    }
+
+    private int updateWithStatement(Connection connection, BoundSql boundSql) throws Exception {
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            String sql = boundSql.getSql();
+            return statement.executeUpdate(sql);
+        } finally {
+            closeStatement(statement);
         }
     }
 

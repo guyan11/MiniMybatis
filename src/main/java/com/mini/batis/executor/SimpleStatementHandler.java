@@ -38,6 +38,11 @@ public class SimpleStatementHandler implements StatementHandler {
         }
     }
 
+    @Override
+    public int update(Connection connection) {
+        return 0;
+    }
+
     private <E> List<E> queryWithStatement(Connection connection, BoundSql boundSql,
                                            Class<?> resultClass) throws Exception {
         Statement statement = null;

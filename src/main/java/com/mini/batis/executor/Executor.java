@@ -7,4 +7,6 @@ import java.util.List;
 public interface Executor {
 
     <E> List<E> query(MapperStatement mapperStatement, Object parameter);
+
+    int update(MapperStatement statementInfo, Object parameter);
 }

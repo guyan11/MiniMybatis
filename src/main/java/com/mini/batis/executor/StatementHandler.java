@@ -6,4 +6,6 @@ import java.util.List;
 public interface StatementHandler {
 
     <E> List<E> query(Connection connection);
+
+    int update(Connection connection);
 }

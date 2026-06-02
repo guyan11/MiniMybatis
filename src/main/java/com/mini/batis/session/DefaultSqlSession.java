@@ -56,4 +56,9 @@ public class DefaultSqlSession implements SqlSession {
         throw new RuntimeException("expected one result but got more than one");
     }
 
+    @Override
+    public int insert(String statementId, Object parameter) {
+        return 0;
+    }
+
 }
