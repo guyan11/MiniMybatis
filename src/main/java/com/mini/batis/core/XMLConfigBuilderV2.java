@@ -49,6 +49,9 @@ public class XMLConfigBuilderV2 {
         for (Element mapper : mappers) {
             String resource = mapper.attributeValue("resource");
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
+            if (null == inputStream) {
+                throw new RuntimeException("Can not find mapper file:" + resource);
+            }
             XMLMapperBuilderV2 xmlMapperBuilder = new XMLMapperBuilderV2();
             xmlMapperBuilder.parse(inputStream, configuration);
 

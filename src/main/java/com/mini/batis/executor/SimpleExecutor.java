@@ -37,7 +37,7 @@ public class SimpleExecutor implements Executor {
 
     @Override
     public int update(MapperStatement statementInfo, Object parameter) {
-        return 0;
+        throw new UnsupportedOperationException("update is not supported: " + statementInfo.getId());
     }
 
 }

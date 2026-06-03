@@ -45,6 +45,9 @@ public class DefaultSqlSessionV2 implements SqlSession {
         if (statementInfo == null) {
             throw new RuntimeException("Can not find statement: " + statementId);
         }
+        if (!"insert".equals(statementInfo.getSqlCommandType())) {
+            throw new RuntimeException("Statement is not insert:" + statementId);
+        }
         return executor.update(statementInfo, parameter);
     }
 

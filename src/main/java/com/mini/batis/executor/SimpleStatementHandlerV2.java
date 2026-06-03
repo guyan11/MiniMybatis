@@ -103,8 +103,8 @@ public class SimpleStatementHandlerV2 implements StatementHandler {
             resultSet = preparedStatement.executeQuery();
             return resultSetHandler.handleResultSet(resultSet);
         } finally {
-            closeStatement(preparedStatement);
             closeResultSet(resultSet);
+            closeStatement(preparedStatement);
         }
     }
 

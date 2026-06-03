@@ -58,7 +58,7 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public int insert(String statementId, Object parameter) {
-        return 0;
+        throw new RuntimeException("insert not supported");
     }
 
 }
