@@ -43,7 +43,7 @@ public class SimpleExecutorV2 implements Executor {
             StatementHandler statementHandler = new SimpleStatementHandlerV2(statementInfo, parameter);
             return statementHandler.update(connection);
         } catch (Exception e) {
-            throw new RuntimeException("Error executing update data" + statementInfo.getId(), e);
+            throw new RuntimeException("Error executing update data：" + statementInfo.getId(), e);
         } finally {
             closeConnection(connection);
         }

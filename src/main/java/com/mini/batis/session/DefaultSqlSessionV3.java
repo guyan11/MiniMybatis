@@ -2,6 +2,7 @@ package com.mini.batis.session;
 
 import com.mini.batis.executor.Executor;
 import com.mini.batis.executor.SimpleExecutor;
+import com.mini.batis.executor.SimpleExecutorV2;
 import com.mini.batis.model.Configuration;
 import com.mini.batis.model.MapperStatement;
 
@@ -15,7 +16,7 @@ public class DefaultSqlSessionV3 implements SqlSession {
 
     public DefaultSqlSessionV3(Configuration configuration) {
         this.configuration = configuration;
-        this.executor = new SimpleExecutor(configuration);
+        this.executor = new SimpleExecutorV2(configuration);
     }
 
     @Override
