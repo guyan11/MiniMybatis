@@ -47,13 +47,20 @@ public class XMLConfigBuilderV2 {
         }
         List<Element> mappers = mappersElement.elements("mapper");
         for (Element mapper : mappers) {
-            String resource = mapper.attributeValue("resource");
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
-            if (null == inputStream) {
-                throw new RuntimeException("Can not find mapper file:" + resource);
+            InputStream inputStream = null;
+            try {
+                String resource = mapper.attributeValue("resource");
+                inputStream = getClass().getClassLoader().getResourceAsStream(resource);
+                if (null == inputStream) {
+                    throw new RuntimeException("Can not find mapper file:" + resource);
+                }
+                XMLMapperBuilderV2 xmlMapperBuilder = new XMLMapperBuilderV2();
+                xmlMapperBuilder.parse(inputStream, configuration);
+            } finally {
+                if (null != inputStream) {
+                    inputStream.close();
+                }
             }
-            XMLMapperBuilderV2 xmlMapperBuilder = new XMLMapperBuilderV2();
-            xmlMapperBuilder.parse(inputStream, configuration);
 
         }
     }
@@ -71,7 +78,7 @@ public class XMLConfigBuilderV2 {
             }
         }
         if (null == matchedEnvironmentElement) {
-            return;
+            throw new RuntimeException("Can not find matched environment");
         }
         Element dataSourceElement = matchedEnvironmentElement.element("dataSource");
         if (null == dataSourceElement) {

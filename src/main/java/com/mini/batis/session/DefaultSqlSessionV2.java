@@ -41,14 +41,7 @@ public class DefaultSqlSessionV2 implements SqlSession {
 
     @Override
     public int insert(String statementId, Object parameter) {
-        MapperStatement statementInfo = configuration.getMapperStatement(statementId);
-        if (statementInfo == null) {
-            throw new RuntimeException("Can not find statement: " + statementId);
-        }
-        if (!"insert".equals(statementInfo.getSqlCommandType())) {
-            throw new RuntimeException("Statement is not insert:" + statementId);
-        }
-        return executor.update(statementInfo, parameter);
+        throw new UnsupportedOperationException("current version not support insert");
     }
 
 }

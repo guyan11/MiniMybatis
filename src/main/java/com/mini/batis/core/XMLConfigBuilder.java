@@ -47,10 +47,20 @@ public class XMLConfigBuilder {
         }
         List<Element> mappers = mappersElement.elements("mapper");
         for (Element mapper : mappers) {
-            String resource = mapper.attributeValue("resource");
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
-            XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder();
-            xmlMapperBuilder.parse(inputStream, configuration);
+            InputStream inputStream = null;
+            try {
+                String resource = mapper.attributeValue("resource");
+                inputStream = getClass().getClassLoader().getResourceAsStream(resource);
+                if (null == inputStream) {
+                    throw new RuntimeException("Can not find mapper file:" + resource);
+                }
+                XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder();
+                xmlMapperBuilder.parse(inputStream, configuration);
+            } finally {
+                if (null != inputStream) {
+                    inputStream.close();
+                }
+            }
 
         }
     }
