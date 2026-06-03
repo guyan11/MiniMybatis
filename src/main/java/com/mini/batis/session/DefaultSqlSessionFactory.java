@@ -12,7 +12,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSessionV3(configuration);
+        return new DefaultSqlSession(configuration);
     }
 
 }

@@ -1,47 +1,26 @@
 package com.mini.batis.session;
 
-import com.mini.batis.core.XMLConfigBuilder;
 import com.mini.batis.executor.Executor;
 import com.mini.batis.executor.SimpleExecutor;
 import com.mini.batis.model.Configuration;
 import com.mini.batis.model.MapperStatement;
-import org.apache.commons.dbcp.BasicDataSource;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 
 public class DefaultSqlSession implements SqlSession {
 
-    public Configuration initConfiguration() {
-        String configPath = "sqlMapConfig.xml";
-        XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder();
-        Configuration configuration = xmlConfigBuilder.parse(configPath);
-        if (configuration == null) {
-            throw new RuntimeException("configuration is null");
-        }
-        return configuration;
+    private final Configuration configuration;
+    private final Executor executor;
+
+    public DefaultSqlSession(Configuration configuration) {
+        this.configuration = configuration;
+        this.executor = new SimpleExecutor(configuration);
     }
 
     @Override
     public <E> List<E> selectList(String statementId, Object parameter) {
-        Configuration configuration = initConfiguration();
-        Executor executor = new SimpleExecutor(configuration);
-        MapperStatement statementInfo = configuration.getMapperStatement(statementId);
-        List<E> resList = executor.query(statementInfo, parameter);
-        closeDataSource(configuration);
-        return resList;
-    }
-
-    private void closeDataSource(Configuration configuration) {
-        DataSource dataSource = configuration.getDataSource();
-        if (dataSource instanceof BasicDataSource) {
-            try {
-                ((BasicDataSource) dataSource).close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        MapperStatement mapperStatement = getMapperStatement(statementId);
+        return executor.query(mapperStatement, parameter);
     }
 
     @Override
@@ -58,7 +37,18 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public int insert(String statementId, Object parameter) {
-        throw new RuntimeException("insert not supported");
+        MapperStatement mapperStatement = getMapperStatement(statementId);
+        if (!"insert".equalsIgnoreCase(mapperStatement.getSqlCommandType())) {
+            throw new RuntimeException("Statement is not insert: " + statementId);
+        }
+        return executor.update(mapperStatement, parameter);
     }
 
+    private MapperStatement getMapperStatement(String statementId) {
+        MapperStatement mapperStatement = configuration.getMapperStatement(statementId);
+        if (mapperStatement == null) {
+            throw new RuntimeException("Can not find statement: " + statementId);
+        }
+        return mapperStatement;
+    }
 }

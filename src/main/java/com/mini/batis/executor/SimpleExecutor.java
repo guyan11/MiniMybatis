@@ -20,24 +20,36 @@ public class SimpleExecutor implements Executor {
         Connection connection = null;
         try {
             connection = configuration.getDataSource().getConnection();
-            StatementHandler statementHandler = new SimpleStatementHandlerV2(mapperStatement, parameter);
+            StatementHandler statementHandler = new SimpleStatementHandler(mapperStatement, parameter);
             return statementHandler.query(connection);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error executing query: " + mapperStatement.getId(), e);
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException("error closing connection", e);
-                }
-            }
+            closeConnection(connection);
         }
     }
 
     @Override
-    public int update(MapperStatement statementInfo, Object parameter) {
-        throw new UnsupportedOperationException("update is not supported: " + statementInfo.getId());
+    public int update(MapperStatement mapperStatement, Object parameter) {
+        Connection connection = null;
+        try {
+            connection = configuration.getDataSource().getConnection();
+            StatementHandler statementHandler = new SimpleStatementHandler(mapperStatement, parameter);
+            return statementHandler.update(connection);
+        } catch (Exception e) {
+            throw new RuntimeException("Error executing update: " + mapperStatement.getId(), e);
+        } finally {
+            closeConnection(connection);
+        }
     }
 
+    private void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Error closing connection", e);
+            }
+        }
+    }
 }
