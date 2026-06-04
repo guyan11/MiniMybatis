@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class UserQuery {
 
-    private String userName;
+    private String username;
 
     private Integer id;
 }

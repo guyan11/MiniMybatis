@@ -11,7 +11,7 @@ public interface UserMapper {
 
     User findById(Integer id);
 
-    User findByName(UserQuery userQuery);
+    User findByUsername(UserQuery userQuery);
 
     int insertUser(User user);
 }
