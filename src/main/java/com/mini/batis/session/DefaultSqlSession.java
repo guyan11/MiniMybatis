@@ -21,6 +21,9 @@ public class DefaultSqlSession implements SqlSession {
     @Override
     public <E> List<E> selectList(String statementId, Object parameter) {
         MapperStatement mapperStatement = getMapperStatement(statementId);
+        if (!"select".equalsIgnoreCase(mapperStatement.getSqlCommandType())) {
+            throw new RuntimeException("Statement is not select: " + statementId);
+        }
         return executor.query(mapperStatement, parameter);
     }
 
@@ -45,7 +48,8 @@ public class DefaultSqlSession implements SqlSession {
         return executor.update(mapperStatement, parameter);
     }
 
-    private MapperStatement getMapperStatement(String statementId) {
+    @Override
+    public MapperStatement getMapperStatement(String statementId) {
         MapperStatement mapperStatement = configuration.getMapperStatement(statementId);
         if (mapperStatement == null) {
             throw new RuntimeException("Can not find statement: " + statementId);

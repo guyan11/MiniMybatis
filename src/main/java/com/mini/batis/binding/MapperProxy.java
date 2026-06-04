@@ -1,5 +1,6 @@
 package com.mini.batis.binding;
 
+import com.mini.batis.model.MapperStatement;
 import com.mini.batis.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
@@ -28,15 +29,21 @@ public class MapperProxy<T> implements InvocationHandler {
         Object parameter = getParameter(args);
         Class<?> returnType = method.getReturnType();
 
-        if (isInsertMethod(returnType)) {
+        MapperStatement mapperStatement = sqlSession.getMapperStatement(statementId);
+        String sqlCommandType = mapperStatement.getSqlCommandType();
+        if ("insert".equalsIgnoreCase(sqlCommandType)) {
             return sqlSession.insert(statementId, parameter);
         }
 
-        if (Collection.class.isAssignableFrom(returnType)) {
+        if ("select".equalsIgnoreCase(sqlCommandType) && Collection.class.isAssignableFrom(returnType)) {
             return sqlSession.selectList(statementId, parameter);
         }
 
-        return sqlSession.selectOne(statementId, parameter);
+        if ("select".equalsIgnoreCase(sqlCommandType)) {
+            return sqlSession.selectOne(statementId, parameter);
+        }
+
+        throw new RuntimeException("Unsupported sql command type: " + sqlCommandType);
     }
 
     private Object getParameter(Object[] args) {
@@ -50,7 +57,7 @@ public class MapperProxy<T> implements InvocationHandler {
         throw new RuntimeException("Multiple parameters are not supported yet");
     }
 
-    public boolean isInsertMethod(Class<?> returnType) {
-        return Integer.class.equals(returnType) || int.class.equals(returnType);
-    }
+    // public boolean isInsertMethod(Class<?> returnType) {
+    //     return Integer.class.equals(returnType) || int.class.equals(returnType);
+    // }
 }

@@ -1,5 +1,7 @@
 package com.mini.batis.session;
 
+import com.mini.batis.model.MapperStatement;
+
 import java.util.List;
 
 public interface SqlSession {
@@ -11,5 +13,7 @@ public interface SqlSession {
     int insert(String statementId, Object parameter);
 
     <T> T getMapper(Class<T> mapperClass);
+
+    MapperStatement getMapperStatement(String statementId);
 
 }
