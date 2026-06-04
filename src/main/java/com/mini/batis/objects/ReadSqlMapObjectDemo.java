@@ -22,8 +22,8 @@ public class ReadSqlMapObjectDemo {
         user.setEmail("Bom@example.com");
 
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        int affectedRows = userMapper.insertUser(user);
-        System.out.println("affected rows =: " + affectedRows);
+        // int affectedRows = userMapper.insertUser(user);
+        // System.out.println("affected rows =: " + affectedRows);
 
         UserQuery userQuery = new UserQuery();
         userQuery.setUsername("Bom");
