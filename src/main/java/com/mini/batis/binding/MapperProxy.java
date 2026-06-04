@@ -4,12 +4,16 @@ import com.mini.batis.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MapperProxy<T> implements InvocationHandler {
 
     private final SqlSession sqlSession;
 
     private final Class<T> mapperInterface;
+
+    private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<>();
 
     public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface) {
         this.sqlSession = sqlSession;
@@ -24,7 +28,8 @@ public class MapperProxy<T> implements InvocationHandler {
         }
 
 
-        MapperMethod mapperMethod = new MapperMethod(mapperInterface, method, sqlSession);
+        MapperMethod mapperMethod = methodCache.computeIfAbsent(method,
+                m -> new MapperMethod(mapperInterface, method, sqlSession));
         return mapperMethod.execute(sqlSession, args);
 
         // String statementId = mapperInterface.getName() + "." + method.getName();
@@ -48,16 +53,16 @@ public class MapperProxy<T> implements InvocationHandler {
         // throw new RuntimeException("Unsupported sql command type: " + sqlCommandType);
     }
 
-    private Object getParameter(Object[] args) {
-        if (args == null || args.length == 0) {
-            return null;
-        }
-
-        if (args.length == 1) {
-            return args[0];
-        }
-        throw new RuntimeException("Multiple parameters are not supported yet");
-    }
+    // private Object getParameter(Object[] args) {
+    //     if (args == null || args.length == 0) {
+    //         return null;
+    //     }
+    //
+    //     if (args.length == 1) {
+    //         return args[0];
+    //     }
+    //     throw new RuntimeException("Multiple parameters are not supported yet");
+    // }
 
     // public boolean isInsertMethod(Class<?> returnType) {
     //     return Integer.class.equals(returnType) || int.class.equals(returnType);
