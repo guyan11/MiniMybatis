@@ -10,4 +10,6 @@ public interface SqlSession {
 
     int insert(String statementId, Object parameter);
 
+    <T> T getMapper(Class<T> mapperClass);
+
 }

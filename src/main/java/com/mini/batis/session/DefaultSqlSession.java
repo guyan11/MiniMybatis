@@ -1,5 +1,6 @@
 package com.mini.batis.session;
 
+import com.mini.batis.binding.MapperProxyFactory;
 import com.mini.batis.executor.Executor;
 import com.mini.batis.executor.SimpleExecutor;
 import com.mini.batis.model.Configuration;
@@ -50,5 +51,11 @@ public class DefaultSqlSession implements SqlSession {
             throw new RuntimeException("Can not find statement: " + statementId);
         }
         return mapperStatement;
+    }
+
+    @Override
+    public <T> T getMapper(Class<T> mapperClass) {
+        MapperProxyFactory<T> proxyFactory = new MapperProxyFactory<>(mapperClass);
+        return proxyFactory.newInstance(this);
     }
 }

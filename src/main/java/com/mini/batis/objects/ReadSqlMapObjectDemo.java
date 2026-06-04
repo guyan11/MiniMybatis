@@ -1,9 +1,12 @@
 package com.mini.batis.objects;
 
 import com.mini.batis.entity.User;
+import com.mini.batis.mapper.UserMapper;
 import com.mini.batis.session.SqlSession;
 import com.mini.batis.session.SqlSessionFactory;
 import com.mini.batis.session.SqlSessionFactoryBuilder;
+
+import java.util.List;
 
 public class ReadSqlMapObjectDemo {
 
@@ -13,11 +16,16 @@ public class ReadSqlMapObjectDemo {
         SqlSession sqlSession = sqlSessionFactory.openSession();
 
         User user = new User();
-        user.setUsername("Nick");
+        user.setUsername("Bom");
         user.setPassword("password999");
-        user.setEmail("Nick@example.com");
+        user.setEmail("Bom@example.com");
 
-        int result = sqlSession.insert("com.mini.batis.mapper.UserMapper.insertUser", user);
-        System.out.println("affected rows =: " + result);
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        int affectedRows = userMapper.insertUser(user);
+        System.out.println("affected rows =: " + affectedRows);
+
+        List<User> userList = userMapper.findAll();
+        userList.forEach(System.out::println);
+
     }
 }
