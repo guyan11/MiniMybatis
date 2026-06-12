@@ -49,6 +49,24 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
+    public int update(String statementId, Object parameter) {
+        MapperStatement mapperStatement = getMapperStatement(statementId);
+        if (!"update".equalsIgnoreCase(mapperStatement.getSqlCommandType())) {
+            throw new RuntimeException("Statement is not update: " + statementId);
+        }
+        return executor.update(mapperStatement, parameter);
+    }
+
+    @Override
+    public int delete(String statementId, Object parameter) {
+        MapperStatement mapperStatement = getMapperStatement(statementId);
+        if (!"delete".equalsIgnoreCase(mapperStatement.getSqlCommandType())) {
+            throw new RuntimeException("Statement is not delete: " + statementId);
+        }
+        return executor.update(mapperStatement, parameter);
+    }
+
+    @Override
     public MapperStatement getMapperStatement(String statementId) {
         MapperStatement mapperStatement = configuration.getMapperStatement(statementId);
         if (mapperStatement == null) {

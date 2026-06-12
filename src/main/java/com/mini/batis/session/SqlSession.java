@@ -12,6 +12,10 @@ public interface SqlSession {
 
     int insert(String statementId, Object parameter);
 
+    int update(String statementId, Object parameter);
+
+    int delete(String statementId, Object parameter);
+
     <T> T getMapper(Class<T> mapperClass);
 
     MapperStatement getMapperStatement(String statementId);

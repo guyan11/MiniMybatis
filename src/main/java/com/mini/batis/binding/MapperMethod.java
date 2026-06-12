@@ -21,6 +21,12 @@ public class MapperMethod {
         if ("insert".equalsIgnoreCase(sqlCommand.getSqlCommandType())) {
             return sqlSession.insert(sqlCommand.getStatementId(), parameter);
         }
+        if ("update".equalsIgnoreCase(sqlCommand.getSqlCommandType())) {
+            return sqlSession.update(sqlCommand.getStatementId(), parameter);
+        }
+        if ("delete".equalsIgnoreCase(sqlCommand.getSqlCommandType())) {
+            return sqlSession.delete(sqlCommand.getStatementId(), parameter);
+        }
         if ("select".equalsIgnoreCase(sqlCommand.getSqlCommandType())) {
             if (methodSignature.returnMany()) {
                 return sqlSession.selectList(sqlCommand.getStatementId(), parameter);

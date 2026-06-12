@@ -14,4 +14,8 @@ public interface UserMapper {
     User findByUsername(UserQuery userQuery);
 
     int insertUser(User user);
+
+    int updateUser(User user);
+
+    int deleteUser(Integer id);
 }
