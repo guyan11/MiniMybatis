@@ -1,5 +1,6 @@
 package com.mini.batis.model;
 
+import com.mini.batis.scripting.SqlSource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,6 @@ public class MapperStatement {
     private String parameterType;
     private String sqlCommandType;
     private String statementType;
+
+    private SqlSource sqlSource;
 }

@@ -2,12 +2,19 @@ package com.mini.batis.core;
 
 import com.mini.batis.model.Configuration;
 import com.mini.batis.model.MapperStatement;
+import com.mini.batis.scripting.SqlSource;
+import com.mini.batis.scripting.defaults.DynamicSqlSource;
+import com.mini.batis.scripting.defaults.RawSqlSource;
+import com.mini.batis.scripting.xmltags.MixedSqlNode;
+import com.mini.batis.scripting.xmltags.StaticTextSqlNode;
+import com.mini.batis.scripting.xmltags.TextSqlNode;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class XMLMapperBuilder {
@@ -35,6 +42,17 @@ public class XMLMapperBuilder {
         }
     }
 
+    public SqlSource createSqlSource(String sql) {
+
+        TextSqlNode textSqlNode = new TextSqlNode(sql);
+
+        if (textSqlNode.isDynamic()) {
+            MixedSqlNode rootSqlNode = new MixedSqlNode(Collections.singletonList(textSqlNode));
+            return new DynamicSqlSource(rootSqlNode);
+        }
+        return new RawSqlSource(sql);
+    }
+
     private MapperStatement buildMapperStatement(Element element, String namespace, String sqlCommandType) {
         String id = element.attributeValue("id");
         String resultType = element.attributeValue("resultType");
@@ -50,6 +68,7 @@ public class XMLMapperBuilder {
                 .sql(sql)
                 .sqlCommandType(sqlCommandType)
                 .statementType(statementType)
+                .sqlSource(createSqlSource(sql))
                 .build();
     }
 }
