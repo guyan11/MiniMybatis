@@ -16,14 +16,14 @@ public class ReadSqlMapObjectDemo {
         SqlSessionFactory sqlSessionFactory = factoryBuilder.build("sqlMapConfig.xml");
         SqlSession sqlSession = sqlSessionFactory.openSession();
 
-        User user = new User();
-        user.setUsername("Bom2");
-        user.setPassword("password999");
-        user.setEmail("Bom2@example.com");
+        // User user = new User();
+        // user.setUsername("Bom2");
+        // user.setPassword("password999");
+        // user.setEmail("Bom2@example.com");
 
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        int affectedRows = userMapper.insertUser(user);
-        System.out.println("affected rows =: " + affectedRows);
+        // int affectedRows = userMapper.insertUser(user);
+        // System.out.println("affected rows =: " + affectedRows);
 
         UserQuery userQuery = new UserQuery();
         userQuery.setUsername("Bom");
@@ -32,12 +32,12 @@ public class ReadSqlMapObjectDemo {
         User userByName = userMapper.findByUsername(userQuery);
         System.out.println("userByName =:" + userByName);
 
-        user.setId(10);
-        user.setUsername("Bom1");
-        user.setPassword("Bom1password");
-        user.setEmail("Bom1@example.com");
-        int updateRows = userMapper.updateUser(user);
-        System.out.println("updateRows =:" + updateRows);
+        // user.setId(10);
+        // user.setUsername("Bom1");
+        // user.setPassword("Bom1password");
+        // user.setEmail("Bom1@example.com");
+        // int updateRows = userMapper.updateUser(user);
+        // System.out.println("updateRows =:" + updateRows);
 
         int deleteRows = userMapper.deleteUser(15);
         System.out.println("deleteRows =:" + deleteRows);

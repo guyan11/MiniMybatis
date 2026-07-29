@@ -62,7 +62,7 @@ public class XMLMapperBuilder {
             MixedSqlNode rootSqlNode = new MixedSqlNode(Collections.singletonList(textSqlNode));
             return new DynamicSqlSource(rootSqlNode);
         }
-        return new RawSqlSource(sql);
+        return new RawSqlSource(textSqlNode);
     }
 
     private MapperStatement buildMapperStatement(Element element, String namespace, String sqlCommandType) {
