@@ -114,10 +114,11 @@ public class SimpleStatementHandler implements StatementHandler {
     }
 
     private BoundSql getBoundSql(Object parameterObject) {
-        SqlSourceBuilder sqlSourceBuilder = new SqlSourceBuilder();
-        String sqlAfterDollarParsed = sqlSourceBuilder.parseDollarPlaceholder(mapperStatement.getSql(), parameterObject);
-        SqlSource sqlSource = sqlSourceBuilder.parse(sqlAfterDollarParsed);
-        return sqlSource.getBoundSql(parameterObject);
+        // SqlSourceBuilder sqlSourceBuilder = new SqlSourceBuilder();
+        // String sqlAfterDollarParsed = sqlSourceBuilder.parseDollarPlaceholder(mapperStatement.getSql(), parameterObject);
+        // SqlSource sqlSource = sqlSourceBuilder.parse(sqlAfterDollarParsed);
+        // return sqlSource.getBoundSql(parameterObject);
+        return mapperStatement.getSqlSource().getBoundSql(parameterObject);
     }
 
     private void closeStatement(Statement statement) throws Exception {
