@@ -13,7 +13,6 @@ import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,33 +53,33 @@ public class XMLMapperBuilder {
         }
     }
 
-    public SqlSource createSqlSource(String sql) {
+    // public SqlSource createSqlSource(String sql) {
+    //
+    //     TextSqlNode textSqlNode = new TextSqlNode(sql);
+    //
+    //     if (textSqlNode.isDynamic()) {
+    //         MixedSqlNode rootSqlNode = new MixedSqlNode(Collections.singletonList(textSqlNode));
+    //         return new DynamicSqlSource(rootSqlNode);
+    //     }
+    //     return new RawSqlSource(textSqlNode);
+    // }
 
-        TextSqlNode textSqlNode = new TextSqlNode(sql);
-
-        if (textSqlNode.isDynamic()) {
-            MixedSqlNode rootSqlNode = new MixedSqlNode(Collections.singletonList(textSqlNode));
-            return new DynamicSqlSource(rootSqlNode);
-        }
-        return new RawSqlSource(textSqlNode);
-    }
-
-    private MapperStatement buildMapperStatement(Element element, String namespace, String sqlCommandType) {
-        String id = element.attributeValue("id");
-        String resultType = element.attributeValue("resultType");
-        String parameterType = element.attributeValue("parameterType");
-        String sql = element.getText();
-        String statementType = element.attributeValue("statementType");
-
-        return MapperStatement.builder()
-                .namespace(namespace)
-                .id(id)
-                .resultType(resultType)
-                .parameterType(parameterType)
-                .sql(sql)
-                .sqlCommandType(sqlCommandType)
-                .statementType(statementType)
-                .sqlSource(createSqlSource(sql))
-                .build();
-    }
+    // private MapperStatement buildMapperStatement(Element element, String namespace, String sqlCommandType) {
+    //     String id = element.attributeValue("id");
+    //     String resultType = element.attributeValue("resultType");
+    //     String parameterType = element.attributeValue("parameterType");
+    //     String sql = element.getText();
+    //     String statementType = element.attributeValue("statementType");
+    //
+    //     return MapperStatement.builder()
+    //             .namespace(namespace)
+    //             .id(id)
+    //             .resultType(resultType)
+    //             .parameterType(parameterType)
+    //             .sql(sql)
+    //             .sqlCommandType(sqlCommandType)
+    //             .statementType(statementType)
+    //             .sqlSource(createSqlSource(sql))
+    //             .build();
+    // }
 }
