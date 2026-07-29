@@ -45,8 +45,8 @@ public class XMLConfigBuilder {
                 if (inputStream == null) {
                     throw new RuntimeException("Can not find mapper file: " + resource);
                 }
-                XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder();
-                xmlMapperBuilder.parse(inputStream, configuration);
+                XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(configuration);
+                xmlMapperBuilder.parse(inputStream);
             }
         }
     }

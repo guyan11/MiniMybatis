@@ -6,7 +6,6 @@ import com.mini.batis.scripting.SqlSource;
 import com.mini.batis.scripting.defaults.DynamicSqlSource;
 import com.mini.batis.scripting.defaults.RawSqlSource;
 import com.mini.batis.scripting.xmltags.MixedSqlNode;
-import com.mini.batis.scripting.xmltags.StaticTextSqlNode;
 import com.mini.batis.scripting.xmltags.TextSqlNode;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -16,28 +15,41 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class XMLMapperBuilder {
 
-    public void parse(InputStream inputStream, Configuration configuration) throws Exception {
+    private final Configuration configuration;
+
+    public XMLMapperBuilder(Configuration configuration) {
+        Objects.requireNonNull(configuration, "configuration is null");
+        this.configuration = configuration;
+    }
+
+    public void parse(InputStream inputStream) throws Exception {
         SAXReader saxReader = new SAXReader();
         Document document = saxReader.read(inputStream);
         Element mapperElement = document.getRootElement();
-        parseMapper(mapperElement, configuration);
+        parseMapper(mapperElement);
     }
 
-    private void parseMapper(Element mapperElement, Configuration configuration) {
+    private void parseMapper(Element mapperElement) {
         String namespace = mapperElement.attributeValue("namespace");
         if (namespace == null || namespace.trim().isEmpty()) {
             throw new RuntimeException("namespace is empty");
         }
 
+        parseStatementNodes(mapperElement, namespace);
+    }
+
+    private void parseStatementNodes(Element mapperElement, String namespace) {
         List<String> statementTags = Arrays.asList("select", "insert", "update", "delete");
         for (String statementTag : statementTags) {
             List<Element> statementElements = mapperElement.elements(statementTag);
             for (Element statementElement : statementElements) {
-                MapperStatement mapperStatement = buildMapperStatement(statementElement, namespace, statementTag);
-                configuration.addMapperStatement(namespace, mapperStatement);
+                XMLStatementBuilder statementBuilder = new XMLStatementBuilder(configuration, statementElement,
+                        namespace, statementTag);
+                statementBuilder.parseStatementNode();
             }
         }
     }

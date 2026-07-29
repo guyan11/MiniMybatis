@@ -13,6 +13,8 @@ public class Configuration {
 
     private Map<String, MapperStatement> mapperStatementMap = new HashMap<>();
 
+    private String currentNamespace;
+
     public void addMapperStatement(String namespace, MapperStatement mapperStatement) {
         mapperStatementMap.put(namespace + "." + mapperStatement.getId(), mapperStatement);
     }
